@@ -29,4 +29,4 @@ For an Identity and Access Administrator, mastering this architecture represents
 ### Phase 4: Pipeline Orchestration & Telemetry Verification
 * **Step 4.1:** Map your new architectural coordinates into GitHub Repository Secrets and commit a declarative YAML workflow file to trigger the runner.
 * **Step 4.2:** Manually execute the deployment, trace the successful non-interactive authentication events within the Microsoft Entra ID Sign-in logs, and confirm a flawless green checkmark run under full network perimeter protection.
-Step 4.3: Execute negative constraint validation by temporarily flipping the policy to a hard block state, re-running the workflow, and verifying an active AADSTS53003 access denial error inside the pipeline execution log.
+* **Step 4.3: Execute negative constraint validation by temporarily flipping the policy to a hard block state, re-running the workflow, and verifying an active AADSTS53003 access denial error inside the pipeline execution log.
