@@ -31,38 +31,3 @@ For an Identity and Access Administrator, mastering this architecture represents
 * **Step 4.2:** Manually execute the deployment, trace the successful non-interactive authentication events within the Microsoft Entra ID Sign-in logs, and confirm a flawless green checkmark run under full network perimeter protection.
 * **Step 4.3: Execute negative constraint validation by temporarily flipping the policy to a hard block state, re-running the workflow, and verifying an active AADSTS53003 access denial error inside the pipeline execution log.
 
-graph TD
-    %% Styling
-    classDef phase fill:#f9f9f9,stroke:#333,stroke-width:2px;
-    classDef step fill:#fff,stroke:#666,stroke-width:1px;
-
-    subgraph Phase 1: Identity & Trust Layering
-    A[Register App: Hardened-AI-Automation-Agent] --> B[Bind Federated Identity Credential]
-    B --> B1[Target: CompCode1/hardened-ai-agent-wif-cap]
-    B --> B2[Constraint: environment:Production]
-    end
-
-    subgraph Phase 2: Dual-Plane Authorization
-    C[Identity Directory Plane] --> C1[Grant User.Read.All Application Scope]
-    C1 --> C2[Apply Tenant Admin Consent]
-    D[Cloud Infrastructure Plane] --> D1[Target Subscription Scope]
-    D1 --> D2[Execute RBAC: az role assignment create Reader]
-    end
-
-    subgraph Phase 3: Perimeter Hardening
-    E[Map Network Perimeter] --> E1[Define GitHub Dynamic IP Named Locations]
-    E1 --> E2[Deploy Workload Conditional Access Policy]
-    E2 --> E3[Enforce Network Match / Drop Unauthorized IPs]
-    end
-
-    subgraph Phase 4: Runtime & Telemetry Validation
-    F[Step 4.1: Populate GitHub Secrets] --> G[Step 4.2: Execute Positive Success Path]
-    G --> H[Step 4.3: Execute Negative Constraint Inverse Test]
-    end
-
-    B2 --> C
-    C2 --> D
-    D2 --> E
-    E3 --> F
-
-    class A,B,C,D,E,F,G,H phase;
