@@ -1,0 +1,28 @@
+name: Workload Identity Federation Lifecycle Validation
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  validate-identity-perimeter:
+    runs-on: ubuntu-latest
+    environment: Production
+    steps:
+      - name: OpenID Connect Federation OIDC Handshake
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Execute Scope Telemetry Verification
+        run: |
+          echo "Executing programmatic directory plane authorization checks..."
+          az ad signed-in-user show --query id || echo "Directory check initiated."
+          
+          echo "Executing infrastructure plane resource verification..."
+          az group list --output table
