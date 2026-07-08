@@ -31,3 +31,51 @@ For an Identity and Access Administrator, mastering this architecture represents
 * **Step 4.2:** Manually execute the deployment, trace the successful non-interactive authentication events within the Microsoft Entra ID Sign-in logs, and confirm a flawless green checkmark run under full network perimeter protection.
 * **Step 4.3: Execute negative constraint validation by temporarily flipping the policy to a hard block state, re-running the workflow, and verifying an active AADSTS53003 access denial error inside the pipeline execution log.
 
+=============================================================================================
+             WORKLOAD IDENTITY FEDERATION (WIF) ENHANCED DEVELOPMENT PIPELINE
+=============================================================================================
+
+[ PHASE 1: IDENTITY & TRUST LAYERING ]
+  │
+  ├──► Create App Registration: "Hardened-AI-Automation-Agent"
+  │      └── Generates Client ID (7090e143-3cbf-4065-93bb-21b84920f9eb)
+  │
+  └──► Bind Federated Identity Credential
+         ├── Source: GitHub OIDC Provider (token.actions.githubusercontent.com)
+         ├── Repository Target: CompCode1/hardened-ai-agent-wif-cap
+         └── Subject Cryptographic Constraint: "environment:Production"
+  │
+  ▼
+[ PHASE 2: DUAL-PLANE LEAST-PRIVILEGE AUTHORIZATION ]
+  │
+  ├──► Identity Directory Plane (Microsoft Graph API)
+  │      └── Grant Application Permission: "User.Read.All" ---> Apply Tenant Admin Consent [✔]
+  │
+  └──► Cloud Infrastructure Plane (Azure Resource Manager)
+         └── Scope: /subscriptions/d5ffd8a5-d994-4eb5-b87c-4442054d233e
+         └── Execute Cloud Shell RBAC: az role assignment create --role "Reader"
+  │
+  ▼
+[ PHASE 3: PERIMETER HARDENING ]
+  │
+  ├──► Establish Network Validation Perimeter
+  │      └── Map GitHub Actions dynamic IP routing blocks into Entra ID Named Locations
+  │
+  └──► Deploy Workload Conditional Access Policy
+         ├── Target: Service Principal ("Hardened-AI-Automation-Agent")
+         ├── Condition: Network Location MATCH ---> Include: "GitHub Named Locations"
+         └── Access Result: Allow Token Issuance (All unauthorized IPs explicitly dropped)
+  │
+  ▼
+[ PHASE 4: LIFECYCLE RUNTIME & TELEMETRY VALIDATION ]
+  │
+  ├──► Step 4.1: Populate Secrets & Deploy Workflow (.github/workflows/azure-auth-test.yml)
+  │                └── Enforce: "id-token: write" & "environment: Production"
+  │
+  ├──► Step 4.2: Execute Positive Success Path
+  │                └── Action Reruns ---> Handshake Matches ---> Entra Sign-In Logs Validate [Success]
+  │
+  └──► Step 4.3: Execute Negative Constraint Validation (The Inverse Test)
+                   └── Toggle CA Policy to Block ---> Rerun Action ---> GitHub Logs Validate [AADSTS53003]
+
+=============================================================================================
